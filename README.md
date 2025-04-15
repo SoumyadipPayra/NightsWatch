@@ -1,7 +1,7 @@
 # NightsWatch
 simple software to monitor system details 
 
-# DB
+# Db
 contains all the operations related to database
 ## Conn
 - Conn package establishes and maintains connection to the postgres database.
