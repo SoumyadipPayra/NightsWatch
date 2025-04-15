@@ -8,6 +8,8 @@ import (
 	"github.com/SoumyadipPayra/NightsWatch/src/db/conn"
 	"github.com/SoumyadipPayra/NightsWatch/src/db/model"
 	"github.com/SoumyadipPayra/NightsWatch/src/db/query"
+	"github.com/SoumyadipPayra/NightsWatch/src/jwts"
+
 	nwPB "github.com/SoumyadipPayra/NightsWatchProtobufs/gogenproto/nightswatch"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -23,7 +25,12 @@ func main() {
 	logger, _ := zap.NewProduction()
 	ctx = context.WithValue(ctx, "logger", logger)
 
-	err := conn.Initialize(ctx, &model.User{}, &model.DeviceData{})
+	err := jwts.Initialize()
+	if err != nil {
+		log.Fatalf("failed to initialize jwts: %v", err)
+	}
+
+	err = conn.Initialize(ctx, &model.User{}, &model.DeviceData{})
 	if err != nil {
 		log.Fatalf("failed to initialize database: %v", err)
 	}

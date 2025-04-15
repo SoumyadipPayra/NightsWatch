@@ -3,21 +3,14 @@ package conn
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-const (
-	//generally it is secret stored int the cloud : for simplicity using local
-	host     = "localhost"
-	port     = "5432"
-	user     = "admin"
-	password = "admin123"
-	dbName   = "nightswatch"
-)
-
+// Config holds the database configuration
 type Config struct {
 	Host     string
 	Port     string
@@ -31,12 +24,13 @@ var DB *gorm.DB //singleton
 // Initialize creates a connection to the database and
 // stores the reference to it in the DB variable
 func Initialize(ctx context.Context, models ...interface{}) error {
+	// Get configuration from environment variables with defaults
 	config := Config{
-		Host:     host,
-		Port:     port,
-		User:     user,
-		Password: password,
-		DBName:   dbName,
+		Host:     getEnvOrDefault("POSTGRES_HOST", "localhost"),
+		Port:     getEnvOrDefault("POSTGRES_PORT", "5432"),
+		User:     getEnvOrDefault("POSTGRES_USER", "admin"),
+		Password: getEnvOrDefault("POSTGRES_PASSWORD", "admin123"),
+		DBName:   getEnvOrDefault("POSTGRES_DB", "nightswatch"),
 	}
 	logger := ctx.Value("logger").(*zap.Logger)
 
@@ -92,4 +86,12 @@ func Initialize(ctx context.Context, models ...interface{}) error {
 // GetDB returns a handle to the DB object
 func GetDB(ctx context.Context) *gorm.DB {
 	return DB.WithContext(ctx)
+}
+
+// getEnvOrDefault returns the environment variable value or the default if not set
+func getEnvOrDefault(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
 }

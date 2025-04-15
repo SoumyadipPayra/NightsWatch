@@ -8,7 +8,6 @@ type User struct {
 	ID            uint64    `gorm:"primary_key;auto_increment"`
 	UserName      string    `gorm:"unique; index; not null"`
 	Password      string    `gorm:"not null"`
-	Email         string    `gorm:"unique; index; not null"`
 	CreatedAt     time.Time `gorm:"auto_create_time, default:CURRENT_TIMESTAMP"`
 	LastLoginTime time.Time `gorm:"auto_update_time"`
 }

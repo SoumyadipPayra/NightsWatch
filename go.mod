@@ -3,8 +3,9 @@ module github.com/SoumyadipPayra/NightsWatch
 go 1.24.1
 
 require (
-	github.com/SoumyadipPayra/NightsWatchProtobufs v0.0.0-20250415054630-3a8f9709c426
+	github.com/SoumyadipPayra/NightsWatchProtobufs v0.0.0-20250415143646-1741bc584504
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
+	github.com/golang-jwt/jwt/v4 v4.5.2
 	go.uber.org/zap v1.27.0
 	google.golang.org/grpc v1.71.1
 	google.golang.org/protobuf v1.36.6
@@ -13,7 +14,6 @@ require (
 )
 
 require (
-	github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/pgx/v5 v5.5.5 // indirect
