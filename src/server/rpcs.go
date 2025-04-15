@@ -94,6 +94,12 @@ func (s *Server) SendDeviceData(ctx context.Context, req *nwPB.DeviceDataRequest
 		return nil, status.Errorf(codes.Unauthenticated, "invalid token")
 	}
 
+	mdUserName := md.Get("user_name")
+	if len(mdUserName) == 0 || mdUserName[0] != userName {
+		logger.Error("user name not matched")
+		return nil, status.Errorf(codes.Unauthenticated, "user name not matched")
+	}
+
 	user, err := s.queryEngine.GetUser(ctx, userName)
 	if err != nil {
 		logger.Error("error getting user", zap.Error(err))
