@@ -38,3 +38,10 @@ contains all the operations related to database
 
 # Validate
 - simple validation of the rpc requests
+
+# Flow
+
+![Flow Diagram](docs/flow.png)
+
+
+
