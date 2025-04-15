@@ -30,7 +30,7 @@ func main() {
 		log.Fatalf("failed to initialize jwts: %v", err)
 	}
 
-	err = conn.Initialize(ctx, &model.User{}, &model.DeviceData{})
+	err = conn.Initialize(ctx, &model.User{}, &model.AppData{}, &model.OsInfo{})
 	if err != nil {
 		log.Fatalf("failed to initialize database: %v", err)
 	}

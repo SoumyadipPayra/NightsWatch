@@ -21,15 +21,34 @@ type App struct {
 	Version string `gorm:"type:string"`
 }
 
-type DeviceData struct {
+type AppData struct {
+	ID            uint64    `gorm:"primary_key;auto_increment"`
+	UserID        uint64    `gorm:"not null;index;foreignKey:ID;references:users"`
+	InstalledApps []*App    `gorm:"serializer:json"`
+	Timestamp     time.Time `gorm:"index;default:CURRENT_TIMESTAMP"`
+}
+
+func (a *AppData) TableName() string {
+	return "app_data"
+}
+
+type OsInfo struct {
 	ID             uint64    `gorm:"primary_key;auto_increment"`
 	UserID         uint64    `gorm:"not null;index;foreignKey:ID;references:users"`
-	InstalledApps  []*App    `gorm:"serializer:json"`
 	OSQueryVersion string    `gorm:"type:string"`
 	OSVersion      string    `gorm:"type:string"`
 	Timestamp      time.Time `gorm:"index;default:CURRENT_TIMESTAMP"`
 }
 
-func (d *DeviceData) TableName() string {
-	return "device_data"
+func (o *OsInfo) TableName() string {
+	return "os_info"
+}
+
+type DeviceData struct {
+	ID             uint64    `gorm:"primary_key;auto_increment"`
+	UserID         uint64    `gorm:"not null;index;foreignKey:ID;references:users"`
+	InstalledApps  []*App    `gorm:"serializer:json"`
+	Timestamp      time.Time `gorm:"index;default:CURRENT_TIMESTAMP"`
+	OSQueryVersion string    `gorm:"type:string"`
+	OSVersion      string    `gorm:"type:string"`
 }

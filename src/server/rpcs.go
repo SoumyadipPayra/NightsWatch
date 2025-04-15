@@ -69,7 +69,7 @@ func (s *Server) Login(ctx context.Context, req *nwPB.LoginRequest) (*nwPB.Login
 
 func (s *Server) SendDeviceData(ctx context.Context, req *nwPB.DeviceDataRequest) (*emptypb.Empty, error) {
 	logger := zap.NewExample().Sugar()
-	logger.Info("send device data request", zap.Any("request", req))
+	logger.Info("send device data request")
 	if err := validate.SendDeviceDataRequest(req); err != nil {
 		logger.Error("error validating send device data request", zap.Error(err))
 		return nil, status.Errorf(codes.InvalidArgument, "error : %s", err.Error())
@@ -118,9 +118,9 @@ func (s *Server) SendDeviceData(ctx context.Context, req *nwPB.DeviceDataRequest
 			}
 			return appModels
 		}(req.InstalledApps.GetApps()),
+		Timestamp:      time.Now(),
 		OSQueryVersion: req.OsqueryVersion.GetVersion(),
 		OSVersion:      req.OsVersion.GetVersion(),
-		Timestamp:      time.Now(),
 	}
 
 	err = s.queryEngine.AddDeviceData(ctx, deviceData)
@@ -128,6 +128,7 @@ func (s *Server) SendDeviceData(ctx context.Context, req *nwPB.DeviceDataRequest
 		logger.Error("error adding device data", zap.Error(err))
 		return nil, status.Errorf(codes.Internal, "error : %s", err.Error())
 	}
+
 	return &emptypb.Empty{}, nil
 }
 
@@ -138,9 +139,15 @@ func (s *Server) GetLatestData(ctx context.Context, req *nwPB.GetLatestDataReque
 		logger.Error("error validating get latest data request", zap.Error(err))
 		return nil, status.Errorf(codes.InvalidArgument, "error : %s", err.Error())
 	}
-	deviceData, err := s.queryEngine.GetLatestDeviceData(ctx, req.GetUserName())
+	appData, err := s.queryEngine.GetLatestAppData(ctx, req.GetUserName())
 	if err != nil {
-		logger.Error("error getting latest device data", zap.Error(err))
+		logger.Error("error getting latest app data", zap.Error(err))
+		return nil, status.Errorf(codes.Internal, "error : %s", err.Error())
+	}
+
+	osInfo, err := s.queryEngine.GetLatestOsInfo(ctx, req.GetUserName())
+	if err != nil {
+		logger.Error("error getting latest os info", zap.Error(err))
 		return nil, status.Errorf(codes.Internal, "error : %s", err.Error())
 	}
 
@@ -155,10 +162,10 @@ func (s *Server) GetLatestData(ctx context.Context, req *nwPB.GetLatestDataReque
 					}
 				}
 				return appModels
-			}(deviceData.InstalledApps),
+			}(appData.InstalledApps),
 		},
-		OsqueryVersion: &nwPB.OSQueryVersion{Version: deviceData.OSQueryVersion},
-		OsVersion:      &nwPB.OSVersion{Version: deviceData.OSVersion},
+		OsqueryVersion: &nwPB.OSQueryVersion{Version: osInfo.OSQueryVersion},
+		OsVersion:      &nwPB.OSVersion{Version: osInfo.OSVersion},
 	}
 	return resp, nil
 }
